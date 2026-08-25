@@ -1,17 +1,120 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QRスタンプ</title>
-<style>
-body{margin:0;padding:20px;text-align:center;font-family:sans-serif;background:#fff}
-h1{font-size:32px}
-img{max-width:100%;height:auto;display:block;margin:20px auto}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QRスタンプ</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      font-size: 32px;
+    }
+
+    #content {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    img {
+      max-width: 100%;
+      border-radius: 15px;
+    }
+
+    #text {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    #loading {
+      font-size: 20px;
+    }
+  </style>
 </head>
+
 <body>
-<h1>QRスタンプ</h1>
-<img src="gorilla.png" alt="まぁいいんじゃね ゴリラ">
+
+  <div id="content">
+
+    <h1>🎉 QRスタンプ 🎉</h1>
+
+    <div id="loading">
+      コンテンツを読み込んでいます……
+    </div>
+
+    <img id="image" style="display:none;">
+
+    <div id="text"></div>
+
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://djhwljahzgskfnnxfoa.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_WGH1w0ZIUcd1tS9Ml4p0Ww_DR2AgteK";
+
+    async function loadContent() {
+
+      try {
+
+        const response = await fetch(
+          SUPABASE_URL +
+          "/rest/v1/contents?select=image_url,text&order=id.desc&limit=1",
+          {
+            headers: {
+              "apikey": SUPABASE_KEY,
+              "Authorization": "Bearer " + SUPABASE_KEY
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Supabaseへの接続に失敗しました");
+        }
+
+        const data = await response.json();
+
+        if (data.length === 0) {
+          document.getElementById("loading").textContent =
+            "まだコンテンツがありません。";
+          return;
+        }
+
+        const content = data[0];
+
+        document.getElementById("loading").style.display = "none";
+
+        const image = document.getElementById("image");
+
+        image.src = content.image_url;
+        image.style.display = "block";
+
+        document.getElementById("text").textContent =
+          content.text || "";
+
+      } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("loading").textContent =
+          "読み込みに失敗しました。";
+
+      }
+    }
+
+    loadContent();
+  </script>
+
 </body>
 </html>
