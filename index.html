@@ -115,6 +115,79 @@
 
     loadContent();
   </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+const SUPABASE_URL = "https://djhwljahgzsgkfnnxfoa.supabase.co";
+const SUPABASE_KEY = "ここにさっきのPublishable key";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function loadContent() {
+    const { data, error } = await supabaseClient
+        .from("contents")
+        .select("image_url, text")
+        .order("id", { ascending: false })
+        .limit(1)
+        .single();
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    if (data.image_url) {
+        document.querySelector("#content-image").src = data.image_url;
+    }
+
+    if (data.text) {
+        document.querySelector("#content-text").textContent = data.text;
+    }
+}
+
+loadContent();
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://djhwljahgzsgkfnnxfoa.supabase.co";
+const SUPABASE_KEY = "ここにPublishable key";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function loadContent() {
+    const { data, error } = await supabaseClient
+        .from("contents")
+        .select("image_url, text")
+        .order("id", { ascending: false })
+        .limit(1)
+        .single();
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    const image = document.createElement("img");
+    image.src = data.image_url;
+    image.style.maxWidth = "100%";
+
+    document.body.appendChild(image);
+
+    if (data.text) {
+        const text = document.createElement("p");
+        text.textContent = data.text;
+        document.body.appendChild(text);
+    }
+}
+
+loadContent();
+</script>
 </body>
 </html>
